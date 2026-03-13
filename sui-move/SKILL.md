@@ -1,7 +1,7 @@
 ---
-name: sui-move
+
+## name: sui-move
 description: Sui Move 2024 smart contract development. Use when writing, reviewing, or debugging Sui Move code, Move.toml configuration, or Sui object model patterns.
----
 
 # Sui Move Development Skill
 
@@ -11,7 +11,7 @@ You are writing Sui Move smart contracts. Follow these rules precisely. Sui Move
 
 ## 1. Package Setup
 
-Always use Move 2024 edition. Every new package's `Move.toml` must include:
+Always use Move 2024 edition. The `name` in `[package]` defines the package's address name and **must match** what your Move code uses (e.g., `module my_package::m` requires `name = "my_package"`):
 
 ```toml
 [package]
@@ -31,17 +31,7 @@ edition = "2024"
 Sui = { git = "...", subdir = "crates/sui-framework/packages/sui-framework", rev = "..." }
 ```
 
-**Named addresses** — prefix named addresses with your project name to avoid conflicts:
-
-```toml
-# ✅
-[addresses]
-my_protocol_amm = "0x0"
-
-# ❌ Too generic — prone to collisions
-[addresses]
-amm = "0x0"
-```
+**No `[addresses]` section (Sui CLI 1.63+)** — named addresses are derived from the `[package]` name and `[dependencies]` keys. Do not add an `[addresses]` or `[dev-addresses]` section.
 
 Run `sui move build` after any significant change to verify the code compiles before proceeding.
 
@@ -62,6 +52,7 @@ module my_package::my_module {
 ```
 
 Standard section order within a module:
+
 1. `use` imports
 2. Constants (`const`)
 3. Structs / Enums
@@ -185,12 +176,14 @@ const MaxFeeBps: u64 = 10_000;   // non-error should be ALL_CAPS
 
 ## 4. Object Abilities Cheat Sheet
 
-| Ability | Meaning in Sui |
-|---------|---------------|
-| `key` | Struct is an on-chain object; requires `id: UID` as first field |
+
+| Ability | Meaning in Sui                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------- |
+| `key`   | Struct is an on-chain object; requires `id: UID` as first field                                                |
 | `store` | Can be embedded inside other objects; enables `public_transfer`, `public_share_object`, `public_freeze_object` |
-| `copy` | Value can be duplicated (not valid on objects with `key`) |
-| `drop` | Value can be silently discarded |
+| `copy`  | Value can be duplicated (not valid on objects with `key`)                                                      |
+| `drop`  | Value can be silently discarded                                                                                |
+
 
 **Object ownership model:**
 
@@ -237,11 +230,13 @@ public fun deposit(mut pool: Pool, coin: Coin<SUI>): Pool { ... }
 
 ## 6. Visibility
 
-| Keyword | Scope |
-|---------|-------|
-| `public` | Callable from any module |
-| `public(package)` | Callable only within the same package |
-| *(none)* | Private — callable only within the same module |
+
+| Keyword           | Scope                                          |
+| ----------------- | ---------------------------------------------- |
+| `public`          | Callable from any module                       |
+| `public(package)` | Callable only within the same package          |
+| *(none)*          | Private — callable only within the same module |
+
 
 `public(friend)` and `friend` declarations are **deprecated**. Use `public(package)` instead.
 
@@ -532,13 +527,14 @@ abort EInsufficientLiquidity
 ```
 
 At runtime, the Sui CLI and GraphQL server automatically decode these into a readable message:
+
 ```
 Error from '0x2::amm::swap' (line 42), abort 'EInsufficientLiquidity': "Insufficient liquidity in pool"
 ```
 
 **Gotcha**: clever error abort codes encode the source line number, so their `u64` value can change if the file is reformatted or lines shift. Don't hardcode clever error abort codes in tests or off-chain tooling — match by constant name instead.
 
-**`assert!` without an abort code** is also valid and auto-derives a clever abort code from the source line:
+`**assert!` without an abort code** is also valid and auto-derives a clever abort code from the source line:
 
 ```move
 // ✅ Valid — line number is embedded automatically
@@ -768,13 +764,16 @@ pool.destroy_for_testing();
 
 ## 19. What Sui Move is NOT
 
-| Pattern | Source | Do NOT use in Sui Move |
-|---------|--------|------------------------|
-| `acquires`, `move_to`, `move_from`, `borrow_global` | Aptos / Core Move | Sui has no global storage |
-| `signer` type | Aptos / Core Move | Use `&mut TxContext` and `ctx.sender()` |
-| `Script` functions | Aptos | Use `entry` functions instead |
-| `public(friend)` | Legacy Sui Move | Use `public(package)` |
-| Struct without `public` keyword | Legacy Sui Move | All structs must be `public` in 2024 |
-| `let x = ...` for mutable vars | Legacy Sui Move | Use `let mut x = ...` |
-| `use` inside function bodies for module-level imports | Style issue | Put `use` at the top of the module |
-| `&signer` | Rust / Aptos | Does not exist in Sui Move |
+
+| Pattern                                               | Source            | Do NOT use in Sui Move                  |
+| ----------------------------------------------------- | ----------------- | --------------------------------------- |
+| `acquires`, `move_to`, `move_from`, `borrow_global`   | Aptos / Core Move | Sui has no global storage               |
+| `signer` type                                         | Aptos / Core Move | Use `&mut TxContext` and `ctx.sender()` |
+| `Script` functions                                    | Aptos             | Use `entry` functions instead           |
+| `public(friend)`                                      | Legacy Sui Move   | Use `public(package)`                   |
+| Struct without `public` keyword                       | Legacy Sui Move   | All structs must be `public` in 2024    |
+| `let x = ...` for mutable vars                        | Legacy Sui Move   | Use `let mut x = ...`                   |
+| `use` inside function bodies for module-level imports | Style issue       | Put `use` at the top of the module      |
+| `&signer`                                             | Rust / Aptos      | Does not exist in Sui Move              |
+
+
