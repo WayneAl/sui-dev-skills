@@ -1,17 +1,17 @@
 ---
 
-## name: sui-move
-description: Sui Move 2024 smart contract development. Use when writing, reviewing, or debugging Sui Move code, Move.toml configuration, or Sui object model patterns.
+## name: move
+description: Move smart contract development on Sui. Use when writing, reviewing, or debugging Move code, Move.toml configuration, or Sui object model patterns.
 
-# Sui Move Development Skill
+# Move Development Skill
 
-You are writing Sui Move smart contracts. Follow these rules precisely. Sui Move is **not** Aptos Move and is **not** Rust — do not apply patterns from those languages.
+You are writing Move smart contracts on Sui. Follow these rules precisely. Move on Sui is **not** Aptos Move and is **not** Rust — do not apply patterns from those languages.
 
 ---
 
 ## 1. Package Setup
 
-Always use Move 2024 edition. The `name` in `[package]` defines the package's address name and **must match** what your Move code uses (e.g., `module my_package::m` requires `name = "my_package"`):
+Always use the Move 2024 edition (`edition = "2024"` in Move.toml). The `name` in `[package]` defines the package's address name and **must match** what your Move code uses (e.g., `module my_package::m` requires `name = "my_package"`):
 
 ```toml
 [package]
@@ -37,12 +37,12 @@ Run `sui move build` after any significant change to verify the code compiles be
 
 ---
 
-## 2. Module Layout (Move 2024)
+## 2. Module Layout
 
 Use the new single-line module declaration without braces:
 
 ```move
-// ✅ Move 2024
+// ✅
 module my_package::my_module;
 
 // ❌ Legacy — do not use
@@ -94,7 +94,7 @@ use sui::coin::Coin;
 All structs must be declared `public`. Ability declarations go **after** the fields:
 
 ```move
-// ✅ Move 2024
+// ✅
 public struct Pool has key {
     id: UID,
     balance_x: Balance<SUI>,
@@ -212,7 +212,7 @@ Only call `transfer`, `share_object`, and `freeze_object` (the non-`public_` var
 All variables that are reassigned or mutably borrowed must be declared `let mut`:
 
 ```move
-// ✅ Move 2024
+// ✅
 let mut pool = Pool { id: object::new(ctx), ... };
 let mut balance = balance::zero<SUI>();
 
@@ -305,7 +305,7 @@ public fun get_fee_bps(pool: &Pool): u64 { pool.fee_bps }
 
 ## 7. Method Syntax
 
-In Move 2024, functions whose first argument matches a type are automatically callable as methods:
+Functions whose first argument matches a type are automatically callable as methods:
 
 ```move
 // Given:
@@ -324,7 +324,7 @@ use fun my_module::pool_value as Pool.value;
 
 ---
 
-## 8. Enums (Move 2024)
+## 8. Enums
 
 Use enums for types with multiple variants. Enums **cannot** have the `key` ability (they cannot be top-level objects), but they can be stored inside objects:
 
@@ -426,7 +426,7 @@ let exact = payment.balance_mut().split(amount); // ✅ avoids ctx
 
 // Consuming values without `drop` — the @0x0 burn pattern
 //
-// Sui Move's linear type system requires every non-`drop` value to be
+// Move's linear type system requires every non-`drop` value to be
 // explicitly consumed. The `_` prefix only suppresses warnings for values
 // that *do* have `drop` — it won't help for Balance<T>, Coin<T>, or your
 // own structs that lack `drop`.
@@ -514,7 +514,7 @@ const EZeroAmount: u64 = 1;
 assert!(amount > 0, EZeroAmount);
 ```
 
-### Clever errors (Move 2024)
+### Clever errors
 
 Annotating a constant with `#[error]` allows it to carry a human-readable message. The value can be any valid constant type — `vector<u8>` is most common for string messages:
 
@@ -762,18 +762,18 @@ pool.destroy_for_testing();
 
 ---
 
-## 19. What Sui Move is NOT
+## 19. What Move on Sui is NOT
 
 
-| Pattern                                               | Source            | Do NOT use in Sui Move                  |
+| Pattern                                               | Source            | Do NOT use on Sui                       |
 | ----------------------------------------------------- | ----------------- | --------------------------------------- |
 | `acquires`, `move_to`, `move_from`, `borrow_global`   | Aptos / Core Move | Sui has no global storage               |
 | `signer` type                                         | Aptos / Core Move | Use `&mut TxContext` and `ctx.sender()` |
 | `Script` functions                                    | Aptos             | Use `entry` functions instead           |
-| `public(friend)`                                      | Legacy Sui Move   | Use `public(package)`                   |
-| Struct without `public` keyword                       | Legacy Sui Move   | All structs must be `public` in 2024    |
-| `let x = ...` for mutable vars                        | Legacy Sui Move   | Use `let mut x = ...`                   |
+| `public(friend)`                                      | Legacy Move       | Use `public(package)`                   |
+| Struct without `public` keyword                       | Legacy Move       | All structs must be `public`            |
+| `let x = ...` for mutable vars                        | Legacy Move       | Use `let mut x = ...`                   |
 | `use` inside function bodies for module-level imports | Style issue       | Put `use` at the top of the module      |
-| `&signer`                                             | Rust / Aptos      | Does not exist in Sui Move              |
+| `&signer`                                             | Rust / Aptos      | Does not exist on Sui                   |
 
 

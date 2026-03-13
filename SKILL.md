@@ -9,10 +9,10 @@ This is a collection of Sui development skills. Each sub-skill is self-contained
 
 ## Sub-skills
 
-### sui-move — Smart Contracts
-**Path:** `sui-move/SKILL.md`
-**Load when:** writing, reviewing, debugging, or deploying Sui Move code; configuring `Move.toml`; working with the Sui object model; writing Move tests.
-**Covers:** Move 2024 edition syntax, package setup, object ownership patterns, capability pattern, events, PTB-callable entry functions, `sui move test`, `sui move build`, `sui client publish`.
+### move — Smart Contracts
+**Path:** `move/SKILL.md`
+**Load when:** writing, reviewing, debugging, or deploying Move code; configuring `Move.toml`; working with the Sui object model; writing Move tests.
+**Covers:** Edition 2024 syntax, package setup, object ownership patterns, capability pattern, events, PTB-callable entry functions, `sui move test`, `sui move build`, `sui client publish`.
 
 ### sui-ts-sdk — TypeScript SDK
 **Path:** `sui-ts-sdk/SKILL.md`
@@ -29,9 +29,9 @@ This is a collection of Sui development skills. Each sub-skill is self-contained
 
 | User is doing...                        | Load                              |
 |-----------------------------------------|-----------------------------------|
-| Writing a Move smart contract           | sui-move                          |
+| Writing a Move smart contract           | move                              |
 | Writing a backend script or CLI         | sui-ts-sdk                        |
 | Building a React/Vue/vanilla Sui dApp   | sui-frontend + sui-ts-sdk         |
-| Full-stack (contracts + frontend)       | sui-move + sui-ts-sdk + sui-frontend |
-| Reviewing or debugging Move tests       | sui-move                          |
+| Full-stack (contracts + frontend)       | move + sui-ts-sdk + sui-frontend  |
+| Reviewing or debugging Move tests       | move                              |
 | Querying on-chain data from Node.js     | sui-ts-sdk                        |
