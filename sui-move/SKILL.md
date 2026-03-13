@@ -16,7 +16,7 @@ Always use Move 2024 edition. Every new package's `Move.toml` must include:
 ```toml
 [package]
 name = "my_package"
-edition = "2024.beta"
+edition = "2024"
 ```
 
 **Implicit framework dependencies (Sui 1.45+)** — do not list `Sui`, `MoveStdlib`, `Bridge`, or `SuiSystem` in `[dependencies]`. They are implicit:
