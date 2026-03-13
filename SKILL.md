@@ -12,7 +12,7 @@ This is a collection of Sui development skills. Each sub-skill is self-contained
 ### move — Smart Contracts
 **Path:** `move/SKILL.md`
 **Load when:** writing, reviewing, debugging, or deploying Move code; configuring `Move.toml`; working with the Sui object model; writing Move tests.
-**Covers:** Edition 2024 syntax, package setup, object ownership patterns, capability pattern, events, PTB-callable entry functions, `sui move test`, `sui move build`, `sui client publish`.
+**Covers:** Routes to focused sub-skills — setup (package config, build/test, pitfalls), syntax (module layout, visibility, enums, macros), objects (structs, abilities, dynamic fields), patterns (events, errors, OTW, capabilities, composability), stdlib (Coin/Balance, vectors, Option, strings).
 
 ### sui-ts-sdk — TypeScript SDK
 **Path:** `sui-ts-sdk/SKILL.md`

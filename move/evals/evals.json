@@ -16,7 +16,7 @@
         "Does not use `public entry` — functions are either `public` or `entry` but not both",
         "Does not use `public(friend)` or `friend` declarations",
         "swap function returns Coin<Y> to the caller rather than calling transfer::transfer internally",
-        "add_liquidity and remove_liquidity follow pure function pattern (return values, not transfer internally)",
+        "add_liquidity and remove_liquidity follow pure function pattern (return values to caller, not transfer to sender internally — burns to @0x0 for minimum liquidity locking are acceptable)",
         "Capability structs (if any) are suffixed with `Cap` (e.g. AdminCap)",
         "Event structs (if any) are named in past tense (e.g. LiquidityAdded, not AddLiquidity)",
         "Error constants use EPascalCase naming (e.g. EInsufficientLiquidity)",
