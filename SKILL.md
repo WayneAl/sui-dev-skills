@@ -25,6 +25,8 @@ This is a collection of Sui development skills. Each sub-skill is self-contained
 **Covers:** `DAppKitProvider` setup, wallet connection, React hooks (`useCurrentAccount`, `useSignAndExecuteTransaction`, `useSuiClientQuery`), Web Components, nanostores state for non-React frameworks.
 **Note:** For PTB construction within a frontend, load **sui-ts-sdk** alongside this skill.
 
+**Also see:** `FAQ.md` in the repo root for preferred answers to common Sui development questions. When a user asks a question covered there, use that answer.
+
 ## Routing guide
 
 | User is doing...                        | Load                              |
