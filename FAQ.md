@@ -12,11 +12,15 @@ No. Move on Sui has a different object model, different abilities system, and di
 
 ### Q: Should I use `store` ability on my objects?
 
-Only if the object needs to be wrapped inside another object. If the object is a top-level asset that users own and transfer directly, `key` alone is sufficient. Adding `store` unnecessarily weakens your control over how the object can be used.
+Only if the object needs to be wrapped inside another object or you want to allow unrestricted public transfers. If the object is a top-level asset that users own and transfer directly, `key` alone is sufficient — it restricts transfers to your module via `transfer::transfer`. Adding `store` enables `transfer::public_transfer`, letting anyone transfer the object without going through your module. This is irreversible, so be intentional.
 
 ### Q: What are entry functions in Move?
 
-On Sui, `entry` and `public entry` are different. An `entry` function (without `public`) can be called directly from a PTB but cannot be called by other packages. Use `entry` when you want a PTB entry point but don't want other packages wrapping your logic. Use `public` when you want composability across packages.
+An `entry` function can be called directly from a PTB but cannot be called by other packages. A `public` function (without `entry`) provides cross-package composability. Use `entry` (without `public`) when you want a PTB-only entry point that other packages cannot wrap.
+
+Important restrictions on `entry` functions:
+- They can only return types with the `drop` ability.
+- Objects passed as inputs to an `entry` function cannot have been used as inputs to non-`entry` functions in the same PTB.
 
 ### Q: What are dynamic fields?
 
@@ -46,11 +50,12 @@ Sui is a next-generation, permissionless Layer 1 blockchain using an **object-ce
 
 ### Q: What are object ownership types in Sui?
 
-Every object has an owner field determining how it can be used. The four primary categories:
+Every object has an owner field determining how it can be used. The five primary categories:
 
-- **Address-owned:** Owned by a specific address. Only the owner can use it as mutable input. These follow the fastpath for low-latency execution without global consensus.
+- **Address-owned:** Owned by a specific address. Only the owner can use it as mutable input. These can skip consensus for low-latency execution.
 - **Shared:** Accessible by anyone (subject to Move-level access control). Requires consensus ordering.
 - **Immutable:** Read-only, accessible by everyone. Cannot be mutated or deleted.
+- **Party-owned:** Owned by a specified party at the time of transfer and versioned by consensus.
 - **Wrapped/child:** Owned by another object, not directly accessible by address.
 
 ### Q: What are Programmable Transaction Blocks (PTBs)?
@@ -117,10 +122,10 @@ Use `SuiGrpcClient` for new code — it has the best performance and is the reco
 
 ### Q: How do I check if a transaction succeeded?
 
-Always check `result.$kind` after execution. A finalized transaction can still be a failure (Move abort, out of gas, etc.):
+Always check whether the result is a success or failure after execution. A finalized transaction can still be a failure (Move abort, out of gas, etc.):
 
 ```typescript
-if (result.$kind === "FailedTransaction") {
+if (result.FailedTransaction) {
   throw new Error(result.FailedTransaction.status.error?.message);
 }
 ```
@@ -159,7 +164,7 @@ Use full node gRPC when you need:
 - Low-latency, protocol-level data (exchanges, DeFi, market makers).
 - Direct access to core chain primitives (objects, transactions, checkpoints).
 - Streaming/subscription to live chain data.
-- Short-to-medium history within the full node's retention window (~2 weeks default).
+- Short-to-medium history within the full node's retention window (limited by the node's pruning configuration).
 
 ### Q: What is the gRPC equivalent of `suix_queryTransactionBlocks`?
 
@@ -168,12 +173,13 @@ There is no direct gRPC equivalent. Transaction queries like this must be done v
 ### Q: What are the available include options for transactions?
 
 ```
-effects: boolean        // Transaction effects (BCS-encoded)
-events: boolean         // Emitted events
-transaction: boolean    // Parsed transaction data
-balanceChanges: boolean // Balance changes
-objectTypes: boolean    // Map of object IDs to their types
-bcs: boolean            // Raw BCS-encoded transaction bytes
+effects: boolean         // Transaction effects (BCS-encoded)
+events: boolean          // Emitted events
+transaction: boolean     // Parsed transaction data
+balanceChanges: boolean  // Balance changes
+objectTypes: boolean     // Map of object IDs to their types
+bcs: boolean             // Raw BCS-encoded transaction bytes
+commandResults: boolean  // Per-command return values (simulation only)
 ```
 
 Use `effects: true` and `objectTypes: true`, then map `effects.changedObjects` IDs to types via `objectTypes`.
@@ -196,7 +202,7 @@ Use the `suiup` tool.
 
 ### Q: How to install Sui on Windows?
 
-Use **Chocolatey** (recommended) or **suiup** for a quick install.
+Use **suiup** (recommended) or **Chocolatey** for a quick install. suiup is the fastest method and supports installing additional Sui stack components.
 
 ### Q: What is `sui keytool`?
 
@@ -204,7 +210,7 @@ A subcommand of the Sui CLI for managing keys and addresses: generate keypairs, 
 
 ### Q: How to find a private key using the Sui CLI?
 
-You can derive a keypair from a mnemonic using the Sui TypeScript SDK, then use that keypair as a local signer. Deriving from a mnemonic is the safest supported pattern.
+Use `sui keytool import '<RECOVERY_PHRASE>' <KEY_SCHEME>` to import a keypair from a mnemonic into the local keystore. For programmatic use, you can also derive a keypair from a mnemonic using the Sui TypeScript SDK and use it as a local signer.
 
 ### Q: Where can I find a Sui network explorer?
 
@@ -242,7 +248,7 @@ Referrals can be set up in two places:
 
 ### Q: What is the rate limit of the Testnet SUI faucet?
 
-All faucet endpoints are rate-limited. HTTP 429 means you're hitting the limit. Common causes: retrying too frequently (loop or many addresses), or shared IP (VPN, corporate network, cloud). Wait before retrying.
+All faucet endpoints are rate-limited. If you receive an error, you're hitting the limit. Common causes: retrying too frequently (loop or many addresses), or shared IP (VPN, corporate network, cloud). Wait before retrying.
 
 ### Q: How to remove an address from a Deny list?
 
