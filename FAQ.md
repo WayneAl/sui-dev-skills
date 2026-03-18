@@ -14,28 +14,6 @@ No. Move on Sui has a different object model, different abilities system, and di
 
 Only if the object needs to be wrapped inside another object. If the object is a top-level asset that users own and transfer directly, `key` alone is sufficient. Adding `store` unnecessarily weakens your control over how the object can be used.
 
----
-
-## TypeScript SDK
-
-### Q: Which package should I use — `@mysten/sui` or `@mysten/sui.js`?
-
-Always use `@mysten/sui`. The `.js` suffix package was renamed at v1.0 and is no longer maintained.
-
-### Q: Should I use `SuiClient` or `SuiGrpcClient`?
-
-Use `SuiGrpcClient` for new code — it has the best performance and is the recommended client. `SuiClient` was removed in v2; if you need JSON-RPC, use `SuiJsonRpcClient` from `@mysten/sui/jsonRpc`.
-
-### Q: How do I check if a transaction succeeded?
-
-Always check `result.$kind` after execution. A finalized transaction can still be a failure (Move abort, out of gas, etc.):
-
-```typescript
-if (result.$kind === 'FailedTransaction') {
-  throw new Error(result.FailedTransaction.status.error?.message);
-}
-```
-
 ### Q: What are entry functions in Move?
 
 On Sui, `entry` and `public entry` are different. An `entry` function (without `public`) can be called directly from a PTB but cannot be called by other packages. Use `entry` when you want a PTB entry point but don't want other packages wrapping your logic. Use `public` when you want composability across packages.
@@ -142,7 +120,7 @@ Use `SuiGrpcClient` for new code — it has the best performance and is the reco
 Always check `result.$kind` after execution. A finalized transaction can still be a failure (Move abort, out of gas, etc.):
 
 ```typescript
-if (result.$kind === 'FailedTransaction') {
+if (result.$kind === "FailedTransaction") {
   throw new Error(result.FailedTransaction.status.error?.message);
 }
 ```
