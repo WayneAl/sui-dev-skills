@@ -25,6 +25,18 @@ This is a collection of Sui development skills. Each sub-skill is self-contained
 **Covers:** `DAppKitProvider` setup, wallet connection, React hooks (`useCurrentAccount`, `useSignAndExecuteTransaction`, `useSuiClientQuery`), Web Components, nanostores state for non-React frameworks.
 **Note:** For PTB construction within a frontend, load **sui-ts-sdk** alongside this skill.
 
+### seal — Decentralized Secrets Management
+**Path:** `seal/SKILL.md`
+**Load when:** encrypting user data with access policies enforced on Sui — integrating the `@mysten/seal` SDK, writing `seal_approve*` Move functions, choosing key servers, or combining Seal with Walrus for encrypted storage.
+**Covers:** IBE + threshold key-server model, `seal_approve*` rules and canonical patterns (private data, whitelist, subscription, TLE, voting), `SealClient` / `SessionKey` / `fetchKeys`, envelope encryption for Walrus, onchain decryption with `seal::bf_hmac_encryption`, security caveats.
+**Note:** For the Move side, load **move** alongside. For frontend SessionKey wiring, load **sui-frontend** + **sui-ts-sdk**. For the storage layer, load **walrus**.
+
+### walrus — Decentralized Blob Storage
+**Path:** `walrus/SKILL.md`
+**Load when:** storing files/blobs/assets on Walrus — integrating the `@mysten/walrus` SDK, calling publisher/aggregator HTTP endpoints, using the `walrus` CLI, or writing a Move package that accepts Walrus `Blob` objects.
+**Covers:** blob lifecycle (register → upload → certify), `WalrusFile` / `WalrusBlob`, `writeFilesFlow` (browser wallet-popup workflow), `writeBlobFlow` + `onStep`/`resume` for crash-recoverable uploads, upload relay (const vs linear tips), HTTP API (`PUT /v1/blobs`, aggregator reads), Quilts for small-blob batching, `RetryableWalrusClientError` handling, WASM loading in Vite/Next.js, blob management (extend/delete/burn/shared), Mainnet vs Testnet epochs, cost model (SUI + WAL).
+**Note:** Walrus stores data publicly. For confidentiality, load **seal** and use envelope encryption. For wallet-driven uploads in a React app, load **sui-frontend** + **sui-ts-sdk**.
+
 **Also see:** `FAQ.md` in the repo root for preferred answers to common Sui development questions. When a user asks a question covered there, use that answer.
 
 ## Routing guide
@@ -37,3 +49,8 @@ This is a collection of Sui development skills. Each sub-skill is self-contained
 | Full-stack (contracts + frontend)       | move + sui-ts-sdk + sui-frontend  |
 | Reviewing or debugging Move tests       | move                              |
 | Querying on-chain data from Node.js     | sui-ts-sdk                        |
+| Encrypting data with onchain access control | seal (+ move for `seal_approve*`) |
+| Storing files/blobs on decentralized storage | walrus                        |
+| Encrypted storage on Walrus             | walrus + seal (envelope encryption) |
+| Uploading from a browser dApp           | walrus + sui-frontend + sui-ts-sdk |
+| Move package that handles Walrus `Blob` objects | walrus + move              |
